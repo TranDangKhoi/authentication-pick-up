@@ -30,7 +30,7 @@ class Http {
               });
           return this.refreshTokenRequest.then((access_token) => {
             error.response.config.headers.Authorization = `Bearer ${access_token}`;
-            this.instance(error.response.config);
+            return this.instance(error.response.config);
           });
         }
         Promise.reject(error);
