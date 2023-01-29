@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication with JWT</title>
+  </head>
+  <body>
+    <form id="login-form">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="admin" />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="username" value="admin" />
+        <button id="btn-login" type="submit">Login</button>
+      </div>
+    </form>
+    <button id="btn-get-profile">Get Profile</button>
+    <button id="btn-get-products">Get Products</button>
+    <button id="btn-get-all">Get Profile and Products</button>
+    <button id="btn-refresh-token">Refresh Token</button>
+    <script src="axios.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
