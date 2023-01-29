@@ -28,10 +28,14 @@ class Http {
             : refreshToken().finally(() => {
                 this.refreshTokenRequest = null;
               });
-          return this.refreshTokenRequest.then((access_token) => {
-            error.response.config.headers.Authorization = `Bearer ${access_token}`;
-            return this.instance(error.response.config);
-          });
+          return this.refreshTokenRequest
+            .then((access_token) => {
+              error.response.config.headers.Authorization = `Bearer ${access_token}`;
+              return this.instance(error.response.config);
+            })
+            .catch((err) => {
+              throw err;
+            });
         }
         Promise.reject(error);
       }
@@ -105,7 +109,8 @@ async function refreshToken() {
     localStorage.setItem("access_token", access_token);
     return access_token;
   } catch (err) {
-    console.log(err);
+    localStorage.clear();
+    throw err.response;
   }
 }
 
