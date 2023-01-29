@@ -4,6 +4,7 @@ class Http {
       baseURL: "http://localhost:4000",
       timeout: 10000,
     });
+    this.refreshTokenRequest = null;
     this.instance.interceptors.request.use(
       (config) => {
         console.log(config);
@@ -17,7 +18,23 @@ class Http {
     );
     this.instance.interceptors.response.use(
       (config) => config,
-      (error) => Promise.reject(error)
+      (error) => {
+        if (
+          error.response.status === 401 &&
+          error.response.data.name === "EXPIRED_ACCESS_TOKEN"
+        ) {
+          this.refreshTokenRequest = this.refreshTokenRequest
+            ? this.refreshTokenRequest
+            : refreshToken().finally(() => {
+                this.refreshTokenRequest = null;
+              });
+          return this.refreshTokenRequest.then((access_token) => {
+            error.response.config.headers.Authorization = `Bearer ${access_token}`;
+            this.instance(error.response.config);
+          });
+        }
+        Promise.reject(error);
+      }
     );
   }
   get(url) {
@@ -53,6 +70,7 @@ form.addEventListener("submit", (e) => {
 
 const getProfileBtn = document.querySelector("#btn-get-profile");
 const getProductsBtn = document.querySelector("#btn-get-products");
+const getAllBtn = document.querySelector("#btn-get-all");
 const refreshTokenBtn = document.querySelector("#btn-refresh-token");
 
 function fetchProfile() {
@@ -99,6 +117,12 @@ getProductsBtn.addEventListener("click", (e) => {
 getProfileBtn.addEventListener("click", (e) => {
   e.preventDefault();
   fetchProfile();
+});
+
+getAllBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  fetchProfile();
+  fetchProducts();
 });
 
 refreshTokenBtn.addEventListener("click", (e) => {
