@@ -41,6 +41,7 @@ class Http {
       }
     );
   }
+
   get(url) {
     return this.instance.get(url);
   }
@@ -49,10 +50,11 @@ class Http {
     return this.instance.post(url, body);
   }
 }
-
 const http = new Http();
 
 const form = document.querySelector("#login-form");
+const getProfileBtn = document.querySelector("#btn-get-profile");
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const username = document.querySelector("#username").value;
@@ -72,65 +74,30 @@ form.addEventListener("submit", (e) => {
     });
 });
 
-const getProfileBtn = document.querySelector("#btn-get-profile");
-const getProductsBtn = document.querySelector("#btn-get-products");
-const getAllBtn = document.querySelector("#btn-get-all");
-const refreshTokenBtn = document.querySelector("#btn-refresh-token");
+getProfileBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  fetchProfile();
+});
 
 function fetchProfile() {
   http
     .get("/profile")
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function fetchProducts() {
-  http
-    .get("/products")
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((error) => {
-      console.log(error);
+    .then((res) => console.log(res))
+    .catch((err) => {
+      console.log(err);
     });
 }
 
 async function refreshToken() {
   const refresh_token = localStorage.getItem("refresh_token");
   try {
-    const res = await http.post("refresh-token", {
-      refresh_token: refresh_token,
+    const res = await http.post("/refresh-token", {
+      refresh_token,
     });
     const { access_token } = res.data.data;
     localStorage.setItem("access_token", access_token);
     return access_token;
   } catch (err) {
-    localStorage.clear();
-    throw err.response;
+    console.log(err);
   }
 }
-
-getProductsBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  fetchProducts();
-});
-
-getProfileBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  fetchProfile();
-});
-
-getAllBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  fetchProfile();
-  fetchProducts();
-});
-
-refreshTokenBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  refreshToken();
-});
